@@ -1,0 +1,18 @@
+# Python & caches
+__pycache__/
+*.py[cod]
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Runtime SQLite databases & logs (never push account state or trades)
+data/*.db
+data/*.sqlite*
+*.db
+*.log
+
+# Local secrets / environment
+.env
+.env.*
+*.ini
