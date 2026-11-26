@@ -7,9 +7,14 @@ Automated Forex & Gold (XAUUSD) trading web application with a 5-stage pipeline:
 4. **Pair Ranker**: Evaluates **XAUUSD**, **GBPUSD**, **EURUSD**, **USDJPY**, **GBPJPY**, and **EURGBP** and selects the highest-conviction setup.
 5. **Exness MT5 & Paper Execution**: Routes trades to your local `MetaTrader 5 EXNESS` terminal (Demo or Live with explicit safety confirmation) or the built-in SQLite Paper Sandbox.
 
-## Quick Start
+## Hosted Website (GitHub Pages)
+Open the standalone web app directly in any browser:
+- **Live Website:** `https://bbhabeshan-source.github.io/exness-ai-quant-terminal/` (powered by `index.html` + `web_engine.js` with live Binance Gold & ER-API Forex quotes, FXStreet news, TradingView charts, and browser Paper Sandbox)
+
+## Quick Start (Local Windows + Exness MT5 Live/Demo Bridge)
+Double-click `start_trader.bat` or run:
 ```powershell
 cd C:\Users\HP\.gemini\antigravity\scratch\exness_ai_trader
 python server.py
 ```
-Then open the URL printed in the terminal (default `http://127.0.0.1:8899`) in your browser.
+Then open `http://127.0.0.1:8899` (or connect the hosted GitHub Pages site to `http://127.0.0.1:8899` via **Connect Local Exness Bridge**).

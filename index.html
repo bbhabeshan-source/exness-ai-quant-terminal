@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exness AI Quant Terminal — Gold & Forex Automated Trading</title>
+  <link rel="stylesheet" href="frontend/styles.css" />
+  <script src="frontend/vendor/lightweight-charts.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">EX</div>
+      <div>
+        <h1>Exness AI Quant Terminal</h1>
+        <p class="subtitle">Chart Analysis → Web News Scrape → Best Strategy → Multi-Pair Selector → Execution</p>
+      </div>
+    </div>
+
+    <div class="account-strip">
+      <div class="stat-pill">
+        <span class="label">Runtime</span>
+        <strong id="hdr-mode" class="badge badge-paper">WEB LIVE</strong>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Balance</span>
+        <strong id="hdr-balance">$1,000.00</strong>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Equity</span>
+        <strong id="hdr-equity">$1,000.00</strong>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Post-Trade Win Rate</span>
+        <strong id="hdr-winrate">0.0% (0W/0L)</strong>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Profit Factor</span>
+        <strong id="hdr-pf">0.00</strong>
+      </div>
+      <div class="stat-pill">
+        <span class="label">Realized P&amp;L</span>
+        <strong id="hdr-pnl">$0.00</strong>
+      </div>
+    </div>
+
+    <div class="actions-strip">
+      <button id="btn-scan" class="btn btn-secondary">Scan Market</button>
+      <button id="btn-run-exec" class="btn btn-primary">Start Auto-Trade</button>
+      <label class="switch-wrap">
+        <input type="checkbox" id="toggle-autopilot" />
+        <span class="switch-label">Auto-Pilot</span>
+      </label>
+    </div>
+  </header>
+
+  <section class="pipeline-bar">
+    <div class="stage-card" id="stage-1">
+      <div class="stage-num">1</div>
+      <div>
+        <div class="stage-title">Chart Analysis</div>
+        <div class="stage-meta" id="stage-1-meta">EMA · RSI · MACD · ADX</div>
+      </div>
+    </div>
+    <div class="stage-arrow">→</div>
+    <div class="stage-card" id="stage-2">
+      <div class="stage-num">2</div>
+      <div>
+        <div class="stage-title">Web News Scrape</div>
+        <div class="stage-meta" id="stage-2-meta">FXStreet · Macro Feeds</div>
+      </div>
+    </div>
+    <div class="stage-arrow">→</div>
+    <div class="stage-card" id="stage-3">
+      <div class="stage-num">3</div>
+      <div>
+        <div class="stage-title">Best Strategy</div>
+        <div class="stage-meta" id="stage-3-meta">Chart + News Confluence</div>
+      </div>
+    </div>
+    <div class="stage-arrow">→</div>
+    <div class="stage-card" id="stage-4">
+      <div class="stage-num">4</div>
+      <div>
+        <div class="stage-title">Pair Selection</div>
+        <div class="stage-meta" id="stage-4-meta">XAUUSD · GBPUSD · FX</div>
+      </div>
+    </div>
+    <div class="stage-arrow">→</div>
+    <div class="stage-card" id="stage-5">
+      <div class="stage-num">5</div>
+      <div>
+        <div class="stage-title">Execution</div>
+        <div class="stage-meta" id="stage-5-meta">Awaiting signal</div>
+      </div>
+    </div>
+  </section>
+
+  <div id="status-banner" class="status-banner hidden"></div>
+
+  <main class="grid-layout">
+    <section class="panel chart-panel">
+      <div class="panel-header">
+        <div class="pair-tabs" id="pair-tabs"></div>
+        <div class="tf-controls">
+          <button class="tf-btn" data-tf="M1">1m</button>
+          <button class="tf-btn" data-tf="M5">5m</button>
+          <button class="tf-btn active" data-tf="M15">15m</button>
+          <button class="tf-btn" data-tf="M30">30m</button>
+          <button class="tf-btn" data-tf="H1">1h</button>
+          <button class="tf-btn" data-tf="H4">4h</button>
+        </div>
+      </div>
+
+      <div class="chart-meta-row">
+        <div class="chart-info-line">
+          <span id="chart-symbol" class="chart-symbol">XAUUSD</span>
+          <span id="chart-price" class="chart-price">--</span>
+          <span id="chart-feed-src" class="chip badge-paper">LIVE</span>
+          <span id="chart-spread" class="chip">Spread: --</span>
+          <span id="chart-regime" class="chip">--</span>
+          <span id="chart-bias" class="chip">--</span>
+        </div>
+        <div class="manual-exec">
+          <button id="btn-manual-buy" class="btn btn-buy">Buy</button>
+          <button id="btn-manual-sell" class="btn btn-sell">Sell</button>
+        </div>
+      </div>
+
+      <div class="chart-nav-bar">
+        <div class="nav-group">
+          <button id="btn-pan-back" class="btn btn-secondary btn-xs">◀ Back</button>
+          <button id="btn-pan-fwd" class="btn btn-secondary btn-xs">Forward ▶</button>
+          <button id="btn-pan-live" class="btn btn-secondary btn-xs">Live ⏭</button>
+          <button id="btn-fit-all" class="btn btn-secondary btn-xs">Fit</button>
+        </div>
+        <div class="nav-group">
+          <button id="btn-zoom-out" class="btn btn-secondary btn-xs">− Zoom</button>
+          <button id="btn-zoom-in" class="btn btn-secondary btn-xs">+ Zoom</button>
+          <label class="chk-inline"><input type="checkbox" id="chk-emas" checked /> EMAs</label>
+          <span class="tv-badge">TradingView Chart</span>
+        </div>
+      </div>
+
+      <div class="tv-wrap">
+        <div id="tv-legend" class="tv-legend"></div>
+        <div id="tv-chart" style="width:100%;height:420px;"></div>
+      </div>
+
+      <div class="indicators-strip" id="indicators-strip"></div>
+
+      <div class="subpanel">
+        <h3>Stage 4: Multi-Pair Live Prices &amp; Rankings</h3>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pair</th>
+                <th>Live Price</th>
+                <th>Feed</th>
+                <th>Signal</th>
+                <th>Strategy</th>
+                <th>Score</th>
+                <th>News</th>
+                <th>Spread</th>
+                <th>Rank</th>
+              </tr>
+            </thead>
+            <tbody id="rankings-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right-col">
+      <section class="panel">
+        <div class="panel-header">
+          <h3>Local Exness MT5 Bridge (Optional)</h3>
+          <span id="mt5-status-chip" class="chip">BROWSER SANDBOX</span>
+        </div>
+
+        <div class="form-grid">
+          <label style="grid-column: 1 / -1;">
+            Local Exness Bridge URL (run <code>start_trader.bat</code> on Windows for real MT5)
+            <input type="text" id="bridge-url" value="http://127.0.0.1:8899" />
+          </label>
+        </div>
+        <div class="btn-row" style="margin-bottom:8px;">
+          <button id="btn-connect-bridge" class="btn btn-primary btn-sm">Connect Local Exness Bridge</button>
+          <button id="btn-disconnect-bridge" class="btn btn-secondary btn-sm">Use Browser Sandbox</button>
+        </div>
+
+        <div id="mt5-creds-box" style="display:none;">
+          <div class="server-filter-row">
+            <span class="label-inline">Server Type:</span>
+            <button class="srv-filter-btn active" data-srv-type="ALL">All Exness</button>
+            <button class="srv-filter-btn" data-srv-type="TRIAL">Demo (Trial)</button>
+            <button class="srv-filter-btn" data-srv-type="REAL">Live (Real)</button>
+          </div>
+          <div class="form-grid">
+            <label>MT5 Login ID<input type="text" id="mt5-login" placeholder="e.g. 477851031" /></label>
+            <label>Exness Server<select id="mt5-server-select"></select></label>
+            <label>MT5 Password<input type="password" id="mt5-password" placeholder="Exness MT5 password" /></label>
+            <label>Custom Server<input type="text" id="mt5-server-custom" placeholder="Optional override" /></label>
+          </div>
+          <div class="btn-row" style="margin-bottom:8px;">
+            <button id="btn-connect-mt5" class="btn btn-primary btn-sm">Sign In Exness MT5</button>
+          </div>
+        </div>
+
+        <hr class="sep" />
+
+        <div class="lot-section">
+          <div class="lot-header">
+            <span class="label-inline">Custom Lot Size</span>
+            <div class="lot-presets">
+              <button type="button" class="lot-chip" data-lot="0.01">0.01</button>
+              <button type="button" class="lot-chip" data-lot="0.02">0.02</button>
+              <button type="button" class="lot-chip" data-lot="0.05">0.05</button>
+              <button type="button" class="lot-chip" data-lot="0.10">0.10</button>
+              <button type="button" class="lot-chip" data-lot="0.25">0.25</button>
+              <button type="button" class="lot-chip" data-lot="0.50">0.50</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            Lot Size (Custom)
+            <input type="number" id="cfg-lot" step="0.01" min="0.01" max="10" value="0.01" />
+          </label>
+          <label>
+            Max Simultaneous Trades
+            <input type="number" id="cfg-maxtrades" step="1" min="1" max="10" value="3" />
+          </label>
+          <label>
+            Min Confluence (%)
+            <input type="number" id="cfg-confluence" step="1" min="20" max="95" value="48" />
+          </label>
+          <label>
+            Reset Sandbox Balance
+            <button id="btn-reset-paper" type="button" class="btn btn-secondary btn-sm">Reset $1,000</button>
+          </label>
+        </div>
+
+        <div class="pairs-picker-wrap">
+          <span class="label-inline">Pairs Allowed for Multi-Pair Auto-Trade:</span>
+          <div id="enabled-pairs-grid" class="enabled-pairs-grid"></div>
+        </div>
+
+        <div class="checkbox-row">
+          <label class="chk"><input type="checkbox" id="cfg-news-filter" checked /> Weight Strategy With Scraped Web News</label>
+          <label class="chk danger-chk"><input type="checkbox" id="cfg-live-confirm" /> Confirm Live Exness Trading (via Local Bridge)</label>
+        </div>
+
+        <div class="btn-row" style="margin-top:8px;">
+          <button id="btn-save-settings" class="btn btn-primary btn-sm">Apply Risk &amp; Pair Settings</button>
+        </div>
+
+        <p class="risk-note">
+          Hosted HTML Mode fetches live Gold (Binance PAXGUSDT) &amp; Forex rates + FXStreet news directly in your browser. For real Exness MT5 order execution, run <code>start_trader.bat</code> on Windows and click <b>Connect Local Exness Bridge</b>.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h3>Stage 3: Strategy Evaluation</h3>
+          <span id="selected-strat-chip" class="chip">--</span>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Strategy</th>
+                <th>Fit</th>
+                <th>News Adj</th>
+                <th>PF</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="strategy-body"></tbody>
+          </table>
+        </div>
+        <ul id="signal-reasons" class="reasons-list"></ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h3>Stage 2: Scraped Web &amp; Macro News</h3>
+          <button id="btn-refresh-news" class="btn btn-secondary btn-xs">Scrape Now</button>
+        </div>
+        <div id="news-sources" class="news-sources"></div>
+        <div id="news-list" class="news-list"></div>
+      </section>
+    </aside>
+
+    <section class="panel full-span">
+      <div class="panel-header">
+        <h3>Stage 5: Open Positions &amp; Execution Log</h3>
+        <span id="open-count-chip" class="chip">0 Open</span>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ticket</th>
+              <th>Mode</th>
+              <th>Pair</th>
+              <th>Side</th>
+              <th>Lots</th>
+              <th>Open</th>
+              <th>SL</th>
+              <th>TP</th>
+              <th>Strategy</th>
+              <th>Score</th>
+              <th>P&amp;L</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="trades-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="web_engine.js"></script>
+</body>
+</html>

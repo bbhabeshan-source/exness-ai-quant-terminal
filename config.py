@@ -5,6 +5,7 @@ all standard timeframes (M1..H4), and full Exness MT5 server list.
 """
 
 from dataclasses import dataclass, field, asdict
+import os
 from typing import Dict, List, Optional
 
 
@@ -154,7 +155,9 @@ class TradingSettings:
     mt5_login: Optional[int] = None
     mt5_password: Optional[str] = None
     mt5_server: str = "Exness-MT5Trial9"
-    mt5_path: Optional[str] = None
+    mt5_path: Optional[str] = field(
+        default_factory=lambda: os.environ.get("EXNESS_MT5_PATH") or r"C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe"
+    )
 
     def to_public_dict(self) -> dict:
         data = asdict(self)
