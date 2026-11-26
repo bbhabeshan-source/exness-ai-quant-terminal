@@ -147,7 +147,6 @@ class TradingSettings:
     lot_size: float = 0.01
     risk_per_trade_pct: float = 1.0
     max_concurrent_trades: int = 3
-    max_daily_loss_pct: float = 5.0
     min_win_rate_gate: float = 85.0        # Retained only as optional display reference
     enforce_win_rate_gate: bool = False    # Never block Stage 5 execution on pre-trade win-rate math
     min_confluence_score: float = 48.0     # Minimum 0-100 combined technical + news score

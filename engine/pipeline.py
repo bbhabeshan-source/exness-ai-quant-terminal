@@ -132,9 +132,6 @@ class TradingPipeline:
             if allow_execute and selected:
                 open_trades = self.db.list_trades(status="OPEN")
                 open_symbols = {t["symbol"] for t in open_trades}
-                acc = self.broker.get_account_summary()
-                stats = acc.get("stats", {})
-                daily_loss_limit = float(acc.get("balance", 1000.0)) * (self.settings.max_daily_loss_pct / 100.0)
                 slots_left = max(0, self.settings.max_concurrent_trades - len(open_trades))
 
                 candidates = [
@@ -162,13 +159,6 @@ class TradingPipeline:
                         "executed": False,
                         "trades": [],
                         "message": "All qualifying pairs already have active open positions.",
-                    }
-                elif float(stats.get("realized_pnl", 0.0)) <= -daily_loss_limit:
-                    execution_result = {
-                        "attempted": False,
-                        "executed": False,
-                        "trades": [],
-                        "message": "Daily loss circuit breaker triggered; execution paused.",
                     }
                 else:
                     execution_result["attempted"] = True
