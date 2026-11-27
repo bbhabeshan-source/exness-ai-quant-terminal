@@ -135,7 +135,22 @@ class ExnessBrokerManager:
             used_path: Optional[str] = None
             initialized = False
 
+            # If the terminal is already logged into the requested account, attach without
+            # re-sending the password (a failed re-login would disconnect the terminal).
             for candidate_path in self._candidate_paths():
+                mt5.shutdown()
+                attach_kwargs: Dict[str, Any] = {"timeout": 15000}
+                if candidate_path:
+                    attach_kwargs["path"] = candidate_path
+                if mt5.initialize(**attach_kwargs):
+                    current = mt5.account_info()
+                    wanted = str(self.settings.mt5_login or "").strip()
+                    if current is not None and (not wanted or str(current.login) == wanted):
+                        initialized = True
+                        used_path = candidate_path
+                        break
+
+            for candidate_path in ([] if initialized else self._candidate_paths()):
                 mt5.shutdown()
                 init_kwargs: Dict[str, Any] = {"timeout": 15000}
                 if candidate_path:
