@@ -130,6 +130,20 @@ DEFAULT_PAIRS: Dict[str, PairSpec] = {
         exness_aliases=["EURGBP", "EURGBPm", "EURGBPc", "EURGBP.r"],
         yahoo_tickers=["EURGBP=X"],
     ),
+    "BTCUSD": PairSpec(
+        symbol="BTCUSD",
+        display_name="Bitcoin / US Dollar",
+        category="CRYPTO",
+        pip_size=1.0,
+        contract_size=1.0,
+        max_spread_pips=60.0,
+        default_tp_pips=450.0,
+        default_sl_pips=300.0,
+        break_even_pips=200.0,
+        priority_weight=1.0,
+        exness_aliases=["BTCUSD", "BTCUSDm", "BTCUSDc", "BTCUSD.r"],
+        yahoo_tickers=["BTC-USD"],
+    ),
 }
 
 
@@ -142,7 +156,7 @@ class TradingSettings:
     cycle_interval_seconds: int = 12
     timeframe: str = "M15"                 # M1, M5, M15, M30, H1, H4
     enabled_pairs: List[str] = field(
-        default_factory=lambda: ["XAUUSD", "GBPUSD", "EURUSD", "USDJPY", "GBPJPY", "EURGBP"]
+        default_factory=lambda: ["XAUUSD", "GBPUSD", "EURUSD", "USDJPY", "GBPJPY", "EURGBP", "BTCUSD"]
     )
     lot_size: float = 0.01
     risk_per_trade_pct: float = 1.0

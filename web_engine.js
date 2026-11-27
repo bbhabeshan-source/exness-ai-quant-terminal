@@ -7,6 +7,7 @@ const PAIRS = {
   USDJPY: { symbol: "USDJPY", name: "US Dollar / Japanese Yen", pip: 0.01, contract: 100000, maxSpread: 2.2, sl: 10, tp: 14, be: 6, weight: 1.0, fallback: 159.20 },
   GBPJPY: { symbol: "GBPJPY", name: "British Pound / Japanese Yen", pip: 0.01, contract: 100000, maxSpread: 3.0, sl: 13, tp: 18, be: 8, weight: 0.95, fallback: 208.90 },
   EURGBP: { symbol: "EURGBP", name: "Euro / British Pound", pip: 0.0001, contract: 100000, maxSpread: 1.8, sl: 8, tp: 10, be: 4.5, weight: 0.95, fallback: 0.8366 },
+  BTCUSD: { symbol: "BTCUSD", name: "Bitcoin / US Dollar", pip: 1, contract: 1, maxSpread: 60, sl: 300, tp: 450, be: 200, weight: 1.0, fallback: 90000 },
 };
 
 const TF_CONFIG = {
@@ -103,6 +104,13 @@ function signalBadge(sig) {
 async function fetchLiveMarketQuotes() {
   const updated = {};
   const tasks = [
+    fetch("https://api.binance.com/api/v3/ticker/bookTicker?symbol=BTCUSDT")
+      .then((r) => r.json())
+      .then((d) => {
+        const bid = parseFloat(d.bidPrice), ask = parseFloat(d.askPrice);
+        if (bid > 0 && ask > 0) updated.BTCUSD = { symbol: "BTCUSD", mid: (bid + ask) / 2, bid, ask, spread_pips: Math.round((ask - bid) * 100) / 100, source: "LIVE_BINANCE_BTC" };
+      })
+      .catch(() => {}),
     fetch("https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT")
       .then((r) => r.json())
       .then((d) => {
@@ -177,10 +185,10 @@ function buildAnchoredSeries(sym, tf, anchor, count = 240) {
 
 async function fetchCandlesForPair(sym, tf) {
   const key = `${sym}_${tf}`;
-  if (sym === "XAUUSD") {
+  if (sym === "XAUUSD" || sym === "BTCUSD") {
     try {
       const interval = TF_CONFIG[tf].binance;
-      const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=PAXGUSDT&interval=${interval}&limit=240`);
+      const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${sym === "BTCUSD" ? "BTCUSDT" : "PAXGUSDT"}&interval=${interval}&limit=240`);
       const rows = await r.json();
       if (Array.isArray(rows) && rows.length >= 60) {
         const parsed = rows.map((k) => ({
@@ -225,6 +233,7 @@ async function scrapeWebNewsBrowser() {
     USDJPY: ["jpy", "yen", "boj", "japan"],
     GBPJPY: ["gbp", "jpy", "pound", "yen"],
     EURGBP: ["eur", "gbp"],
+    BTCUSD: ["bitcoin", "btc", "crypto"],
   };
 
   const items = [];

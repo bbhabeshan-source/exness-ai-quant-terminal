@@ -61,6 +61,7 @@ PAIR_KEYWORDS = {
     "USDJPY": ["jpy", "yen", "usdjpy", "boj", "bank of japan", "ueda"],
     "GBPJPY": ["gbp", "pound", "jpy", "yen", "gbpjpy", "boe", "boj"],
     "EURGBP": ["eur", "gbp", "eurgbp", "ecb", "boe"],
+    "BTCUSD": ["bitcoin", "btc", "crypto"],
 }
 
 

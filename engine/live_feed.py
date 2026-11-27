@@ -182,6 +182,25 @@ class LiveMarketFeed:
             except Exception:
                 pass
 
+        # Bitcoin live quote (Swissquote map has no crypto)
+        if "BTCUSD" not in fetched:
+            try:
+                r = self._session.get("https://api.binance.com/api/v3/ticker/bookTicker?symbol=BTCUSDT", timeout=3.5)
+                if r.status_code == 200:
+                    bid, ask = float(r.json()["bidPrice"]), float(r.json()["askPrice"])
+                    fetched["BTCUSD"] = {
+                        "symbol": "BTCUSD",
+                        "broker_symbol": "BTCUSD",
+                        "bid": bid,
+                        "ask": ask,
+                        "mid": round((bid + ask) / 2.0, 2),
+                        "spread_pips": round(max(0.1, ask - bid), 2),
+                        "time": datetime.now(timezone.utc).isoformat(),
+                        "source": "LIVE_BINANCE_BTC",
+                    }
+            except Exception:
+                pass
+
         with self._lock:
             for sym, q in fetched.items():
                 self._quotes[sym] = q
@@ -319,6 +338,7 @@ class LiveMarketFeed:
             "USDJPY": 159.060,
             "GBPJPY": 208.810,
             "EURGBP": 0.83690,
+            "BTCUSD": 90000.0,
         }.get(symbol, 1.0)
         df_anc = self._build_anchored_candles(symbol, timeframe, anchor, count)
         with self._lock:
@@ -346,6 +366,7 @@ class LiveMarketFeed:
             "USDJPY": 159.060,
             "GBPJPY": 208.810,
             "EURGBP": 0.83690,
+            "BTCUSD": 90000.0,
         }.get(symbol, 1.0)
         half = spec.pip_size
         return {
